@@ -78,3 +78,30 @@
 @media(min-width:600px){.consumer.u-home-screen .u-moment-banner{min-height:280px}.u-hero-copy{grid-template-columns:1fr auto}.u-hero-copy h1{font-size:36px}}
 @media(max-width:599px){.consumer.u-home-screen .u-category-section .u-section-title{margin-bottom:9px}.consumer.u-home-screen .u-category-section .u-section-title h2{font-size:16px}.consumer.u-home-screen .u-category-icon{width:43px;height:43px}.consumer.u-home-screen .u-category-scroll button{gap:7px;padding-bottom:0}.consumer.u-home-screen .u-category-scroll{padding-bottom:3px}.consumer.u-home-screen .u-moment-banner>div>span{display:none}.consumer.u-home-screen .u-moment-banner h2{margin:8px 0}.consumer.u-home-screen .u-moment-banner p{margin-bottom:12px}.consumer .u-home-content .u-section-title p{font-size:10px}.consumer .u-home-content .u-section-title{align-items:flex-start;margin-bottom:12px}.consumer .u-home-content .u-section-title .u-text{font-size:10px;padding-top:0;min-height:24px}}
 .consumer .u-setting-row>div{min-width:0}.consumer .u-setting-row p{overflow-wrap:anywhere}
+/* Live opportunities: shared theme tokens, internal navigation only. */
+.consumer .u-live-photo-banner{position:relative;isolation:isolate;min-height:245px;border-radius:20px;overflow:hidden;margin:24px 0;background:var(--u-chrome);color:#fff}
+.consumer .u-live-photo-banner>img,.consumer .u-live-offer-photo img,.consumer .u-live-thumb img{object-fit:cover}
+.consumer .u-live-photo-banner:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,19,32,.88),rgba(10,19,32,.42));z-index:0}
+.consumer .u-live-photo-copy{position:relative;z-index:1;padding:26px;max-width:460px}
+.consumer .u-live-photo-copy>span{font-size:10px;letter-spacing:2px;display:flex;align-items:center;gap:8px}
+.consumer .u-live-photo-copy h3{font-size:25px;line-height:1.15;margin:18px 0 10px;color:#fff}
+.consumer .u-live-photo-copy p{font-size:12px;line-height:1.5;color:#fff}
+.consumer .u-live-photo-copy button{display:flex;align-items:center;gap:14px;border:0;border-radius:999px;background:var(--u-chrome-active);color:var(--u-chrome);padding:12px 17px;font:inherit;font-size:12px;font-weight:700;margin-top:18px}
+.consumer .u-live-pulse{height:7px;width:7px;background:var(--u-chrome-active);border-radius:50%;animation:u-live-pulse 1.8s ease-in-out infinite}
+.consumer .u-live-art{height:100%;width:100%;display:grid;place-items:center;background:var(--u-tint);color:var(--u-accent)}
+.consumer .u-live-offer-photo{height:165px;position:relative;border-radius:14px;overflow:hidden;margin-bottom:15px}
+.consumer .u-live-offer .u-text{display:flex;gap:12px;margin-top:14px}
+.consumer .u-live-empty{padding:35px 20px;text-align:center;color:var(--u-ink)}
+.consumer .u-live-capsule{position:fixed;z-index:35;top:calc(env(safe-area-inset-top) + 83px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:440px;display:flex;border:1px solid var(--u-accent);border-radius:999px;background:var(--u-surface);color:var(--u-ink);box-shadow:0 10px 32px #0003;padding:6px;animation:u-live-enter .25s ease-out}
+.consumer .u-live-capsule-open{border:0;background:transparent;color:inherit;display:flex;align-items:center;gap:9px;min-width:0;width:100%;padding:0;text-align:left;font:inherit}
+.consumer .u-live-thumb{width:49px;height:49px;flex-shrink:0;position:relative;border-radius:50%;overflow:hidden}
+.consumer .u-live-category{color:var(--u-accent);border-right:1px solid var(--u-line);padding-right:9px;flex-shrink:0}
+.consumer .u-live-capsule-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.consumer .u-live-capsule-text strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.consumer .u-live-capsule-text>span{font-size:11px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--u-muted)}
+.consumer .u-live-badge{color:var(--u-accent);border:1px solid var(--u-line);border-radius:50%;width:43px;height:43px;flex-shrink:0;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:u-live-pulse 1.8s ease-in-out infinite}
+.consumer .u-live-badge small{font-size:7px;font-weight:800}
+.consumer .u-live-dismiss{border:0;background:transparent;color:var(--u-muted);padding:5px 3px;align-self:center}
+@keyframes u-live-pulse{50%{opacity:.55}}
+@keyframes u-live-enter{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
+@media(prefers-reduced-motion:reduce){.consumer .u-live-capsule,.consumer .u-live-badge,.consumer .u-live-pulse{animation:none}}
