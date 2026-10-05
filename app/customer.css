@@ -105,3 +105,20 @@
 @keyframes u-live-pulse{50%{opacity:.55}}
 @keyframes u-live-enter{from{opacity:0;translate:0 -8px}to{opacity:1;translate:0 0}}
 @media(prefers-reduced-motion:reduce){.consumer .u-live-capsule,.consumer .u-live-badge,.consumer .u-live-pulse{animation:none}}
+.consumer .u-live-offer.focused{border:1px solid var(--u-accent);border-radius:16px;padding:16px}
+.consumer .u-live-offer .u-primary{margin-top:18px;display:flex;align-items:center;gap:12px}
+.consumer .u-promo-gallery-controls{position:absolute;bottom:10px;right:10px;display:flex;align-items:center;gap:12px;color:white;background:#101828b3;border-radius:999px;padding:4px}
+.consumer .u-promo-gallery-controls button{background:transparent;color:white;border:0;width:30px;height:30px;font-size:23px}
+.consumer .u-promo-gallery-controls span{font-size:10px}
+.consumer .u-promo-price{display:block;color:var(--u-accent);font-size:21px;margin:12px 0}
+.consumer .u-live-offer>small{display:block;color:var(--u-muted);margin-top:8px;font-size:11px}
+.consumer .u-promo-terms{font-size:11px;color:var(--u-muted);line-height:1.5;white-space:pre-line}
+.consumer .u-promo-booking>label{display:flex;flex-direction:column;gap:8px;margin:22px 0 8px;font-size:13px}
+.consumer .u-promo-booking input{border:1px solid var(--u-line);border-radius:12px;padding:12px;color:var(--u-ink);background:var(--u-surface);max-width:100%;min-width:0}
+.consumer .u-promo-booking>small{color:var(--u-muted);font-size:11px}
+.consumer .u-promo-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:20px 0}
+.consumer .u-promo-slots button{border:1px solid var(--u-line);border-radius:10px;color:var(--u-ink);background:var(--u-surface);padding:10px 5px;font-size:12px}
+.consumer .u-promo-slots button.selected{border-color:var(--u-accent);background:var(--u-tint);color:var(--u-accent)}
+.consumer .u-promo-slots small{display:block;font-size:9px;margin-top:4px}
+.consumer .u-promo-booking>.u-primary{width:100%;margin-top:20px}
+.consumer .u-promo-booking [role=alert]{color:var(--u-danger);font-size:12px}
