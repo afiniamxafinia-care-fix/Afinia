@@ -21,3 +21,9 @@ El diseño soporta áreas seguras del dispositivo, navegación inferior, carruse
 El tema antes llamado Pro se muestra como Navy; conserva el identificador `pro` para respetar las preferencias existentes. Las tres paletas comparten roles de navegación, superficies claras y acciones. El inicio conecta la card de bienestar con recomendaciones y Live mediante una superficie clara continua.
 
 Asset de campaña: `public/images/wellness-coast.webp`, generado con la herramienta integrada de imágenes. Brief: escena costera fotográfica inspirada en Los Cabos, mar turquesa, acantilados de granito y formación rocosa a la derecha, espacio tranquilo a la izquierda para texto, luz natural, sin negocios ni personas ni texto. Se identifica como imagen ilustrativa.
+
+El hero móvil agrupa saludo/Live y título/ubicación; el panel claro y sus carruseles quedan contenidos en los mismos márgenes que el banner. El selector Live conserva el estilo al activarse y el control de perfil muestra el estado con una opción accesible.
+
+La campana entre idioma y avatar requiere sesión. Consulta promociones publicadas y vigentes de favoritos, respeta la elección Live y registra lecturas por cuenta en `notification_receipts`. La bandeja se refresca al abrirla, volver a la pestaña y cada minuto mientras está visible. Los avisos verificados de saldo usan `customer_notifications`, con RLS por destinatario y sin permisos de emisión para clientes. El esquema aplicado está en `db/customer-inbox.sql`.
+
+Los avisos automáticos de saldo quedan pendientes del motor de canjes: `reward_ledger` registra créditos acumulados, no un saldo disponible neto. No se infiere que ese total pueda gastarse. Los avisos del 50% exigen datos backend de elegibilidad, origen loyalty y un favorito; adquisición conserva el tope 20%. No se crearon avisos ni recompensas ficticias.
