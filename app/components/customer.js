@@ -33,7 +33,7 @@ export default function Customer({initialCatalog}){
  async function openInbox(){if(!requireSession())return;setSheet('notifications');await loadInbox();}
  async function readNotice(n){await action(async()=>{if(!requireSession())return;if(!readNotices.includes(n.key)){const {error}=await supabase.from('notification_receipts').insert({customer_id:userId,notification_key:n.key});if(error&&error.code!=='23505')throw error;setReadNotices(prev=>[...prev,n.key]);}const b=catalog.businesses.find(b=>b.id===n.business_id);if(b){setSheet(null);openPlace(b);}});}
  const unreadCount=userId?inbox.filter(n=>!readNotices.includes(n.key)).length:0;
- function openLive(p,source){setLiveFocus(p?.id||null);setSheet('live');if(p)live.track(p,source).catch(()=>notify(t.error));}
+ function openLive(p,source){setLiveFocus(p?.id||null);setSheet('live');if(p?.id&&source)live.track(p,source).catch(()=>notify(t.error));}
  function reservePromotion(p){if(!requireSession())return;setBookingPromotion(p);setSheet('booking');}
  const live=useLive({userId,enabled:prefs.live_enabled,ready:profileReady,catalog,home:screen===0,blocked:!!(sheet||selected||toast)});
 
