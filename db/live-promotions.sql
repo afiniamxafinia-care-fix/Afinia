@@ -115,6 +115,7 @@ begin
  select * into p from public.promotions where id=p_promotion for share;
  if c.service_id<>p.service_id then raise exception 'Promotion service changed; open it again'; end if;
  if p.status<>'published' or p.starts_at>now() or p.ends_at<=now() then raise exception 'Promotion unavailable'; end if;
+ perform pg_advisory_xact_lock(hashtextextended('booking:'||p.business_id::text,0));
  select timezone into tz from public.businesses where id=p.business_id;
  select slot.ends_at into finish from private.promotion_slots(p.id,(p_start at time zone tz)::date) slot where slot.collaborator_id=p_collaborator and slot.starts_at=p_start;
  if finish is null then raise exception 'This time is no longer available'; end if;

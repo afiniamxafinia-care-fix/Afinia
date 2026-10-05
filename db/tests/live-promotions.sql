@@ -8,6 +8,8 @@ insert into public.businesses(id,slug,name,category_id,status,enrollment_status,
 insert into public.business_members(business_id,user_id,role) select b,merchant,'owner' from fixtures;
 insert into public.services(id,business_id,name,name_es,name_en,duration_minutes,price_mxn) select s,b,'QA Service','Servicio QA','QA Service',30,1000 from fixtures;
 insert into public.collaborators(id,business_id,name,active) select c,b,'QA collaborator',true from fixtures;
+insert into public.business_opening_hours(business_id,weekday,opens_at,closes_at) select b,extract(dow from (now() at time zone 'America/Mazatlan')::date+1),'12:00','15:00' from fixtures;
+insert into public.collaborator_services(business_id,collaborator_id,service_id) select b,c,s from fixtures;
 insert into public.availability(business_id,collaborator_id,weekday,opens_at,closes_at) select b,c,extract(dow from (now() at time zone 'America/Mazatlan')::date+1),'12:00','15:00' from fixtures;
 insert into public.promotions(id,business_id,service_id,title,title_es,title_en,description_es,description_en,special_price_mxn,placement,status,starts_at,ends_at) select p,b,s,'QA Promo','QA Promo','QA Promo','Prueba','Test',800,'live','published',now()-interval '1 hour',now()+interval '7 days' from fixtures;
 insert into public.promotions(id,business_id,service_id,title,title_es,title_en,description_es,description_en,special_price_mxn,placement,status,starts_at,ends_at) select pfuture,b,s,'Scheduled QA','Scheduled QA','Scheduled QA','Prueba','Test',800,'live','published',now()+interval '1 day',now()+interval '7 days' from fixtures;

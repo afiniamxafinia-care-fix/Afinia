@@ -102,7 +102,10 @@ begin
  if r.status not in ('draft','canceled','scheduled','confirmed') then raise exception 'REQUEST_LOCKED'; end if;
  if r.starts_at=p_start and r.status in ('scheduled','confirmed') then return r; end if;
  if length(trim(p_name))<2 or length(p_name)>120 or length(p_phone)>40 then raise exception 'CONTACT_REQUIRED'; end if;
- if r.kind='new' and (length(trim(coalesce(r.draft->>'name','')))<2 or length(trim(coalesce(r.draft->>'address','')))<5 or length(trim(coalesce(nullif(r.draft->>'opening_hours_es',''),r.draft->>'opening_hours_en','')))<3) then raise exception 'BUSINESS_BASICS_REQUIRED'; end if;
+ if r.kind='new' then
+ if length(trim(coalesce(r.draft->>'name','')))<2 or length(trim(coalesce(r.draft->>'address','')))<5 or not private.valid_week(r.draft->'opening_schedule') or not exists(select 1 from jsonb_array_elements(r.draft->'opening_schedule') d where (d->>'enabled')::boolean) then raise exception 'BUSINESS_BASICS_REQUIRED';end if;
+ if exists(select 1 from jsonb_array_elements(coalesce(r.draft->'team','[]')) t where length(trim(coalesce(t->>'name','')))<2 or coalesce(t->>'email','')!~'^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' or length(trim(coalesce(t->>'phone','')))<7) then raise exception 'WORKER_CONTACT_REQUIRED';end if;
+ end if;
  if not exists(select 1 from private.verification_slots() s where s.starts_at=p_start) then raise exception 'SLOT_UNAVAILABLE'; end if;
  update public.business_intake_requests set starts_at=p_start,ends_at=p_start+interval '2 hours',status='scheduled',contact_name=trim(p_name),contact_phone=trim(p_phone),updated_at=now() where id=r.id returning * into r;
  insert into public.verification_events(request_id,actor_id,status) values(r.id,auth.uid(),'scheduled');
@@ -118,7 +121,7 @@ begin
  insert into public.verification_events(request_id,actor_id,status) values(r.id,auth.uid(),'canceled');return r;
 end $$;
 create function private.admin_verification(p_request uuid,p_status text,p_notes text,p_message_es text,p_message_en text) returns public.business_intake_requests language plpgsql security definer set search_path='' as $$
-declare r public.business_intake_requests; bid uuid; d jsonb; item jsonb; ord integer:=0; tid uuid;
+declare r public.business_intake_requests; bid uuid; d jsonb; item jsonb; ord integer:=0; tid uuid;sid uuid;service_map jsonb:='{}';service_index integer:=0;worker_services uuid[];
 begin
  if not private.is_platform_admin() then raise exception 'ADMIN_REQUIRED'; end if;
  select * into r from public.business_intake_requests where id=p_request for update;
@@ -140,17 +143,19 @@ begin
  for item in select value from jsonb_array_elements(coalesce(d->'services','[]')) loop
  if coalesce(nullif(item->>'name_es',''),item->>'name_en','')<>'' and coalesce(item->>'price_mxn','') ~ '^\d+(\.\d{1,2})?$' and coalesce(item->>'duration_minutes','') ~ '^\d{1,4}$' then
  if (item->>'duration_minutes')::int between 5 and 1440 then
- insert into public.services(business_id,name,name_es,name_en,description_es,description_en,duration_minutes,price_mxn,active) values(bid,coalesce(nullif(item->>'name_es',''),item->>'name_en'),item->>'name_es',item->>'name_en',coalesce(item->>'description_es',''),coalesce(item->>'description_en',''),(item->>'duration_minutes')::int,(item->>'price_mxn')::numeric,false);
+ insert into public.services(business_id,name,name_es,name_en,description_es,description_en,duration_minutes,price_mxn,active) values(bid,coalesce(nullif(item->>'name_es',''),item->>'name_en'),item->>'name_es',item->>'name_en',coalesce(item->>'description_es',''),coalesce(item->>'description_en',''),(item->>'duration_minutes')::int,(item->>'price_mxn')::numeric,false) returning id into sid;
+ service_map=service_map||jsonb_build_object(coalesce(nullif(item->>'client_id',''),service_index::text),sid::text);
+ if item->>'inherits_business_hours'='false' then perform private.save_service_hours(sid,false,item->'opening_schedule');end if;
  end if;end if;
+ service_index=service_index+1;
  end loop;
+ if private.valid_week(d->'opening_schedule') then perform private.save_business_hours(bid,d->'opening_schedule');end if;
  for item in select value from jsonb_array_elements(coalesce(d->'team','[]')) loop
- if length(trim(coalesce(item->>'name','')))>0 then
- tid=gen_random_uuid();insert into public.collaborators(id,business_id,name,bio_es,bio_en) values(tid,bid,item->>'name',coalesce(item->>'bio_es',''),coalesce(item->>'bio_en',''));
- for item in select value from jsonb_array_elements(coalesce(item->'availability','[]')) loop
- if coalesce(item->>'weekday','') ~ '^[0-6]$' and coalesce(item->>'opens_at','') ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$' and coalesce(item->>'closes_at','') ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$' and item->>'opens_at'<item->>'closes_at' then
- insert into public.availability(business_id,collaborator_id,weekday,opens_at,closes_at) values(bid,tid,(item->>'weekday')::int,(item->>'opens_at')::time,(item->>'closes_at')::time);end if;
- end loop;end if;
- end loop;
+ if length(trim(coalesce(item->>'name','')))>1 and coalesce(item->>'email','')~'^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' and length(trim(coalesce(item->>'phone','')))>6 then
+ select coalesce(array_agg((service_map->>key)::uuid) filter(where service_map->>key is not null),array[]::uuid[]) into worker_services from jsonb_array_elements_text(coalesce(item->'service_ids','[]')) key;
+ perform private.save_team_member(bid,null,item,worker_services);
+ end if;end loop;
+
  end if;
  insert into public.business_members(business_id,user_id,role) values(bid,r.user_id,'owner') on conflict(business_id,user_id) do update set role='owner';
  end if;
