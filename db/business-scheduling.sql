@@ -194,7 +194,7 @@ create function private.bookable_staff(p_service uuid) returns table(collaborato
 declare bid uuid;has_team boolean;
 begin
  if auth.uid() is null then raise exception 'AUTH_REQUIRED';end if;
- select b.id into bid from public.businesses b join public.services s on s.business_id=b.id where s.id=p_service and s.active and b.status='published' and b.booking_enabled and b.enrollment_status='active';if bid is null then return;end if;
+ select b.id into bid from public.businesses b join public.services s on s.business_id=b.id where s.id=p_service and s.active and b.status='published' and b.booking_enabled and b.requires_reservation and b.enrollment_status='active';if bid is null then return;end if;
  has_team=exists(select 1 from public.collaborators co where co.business_id=bid and co.active and not co.is_solo);
  return query select c.id,c.name,c.is_solo from public.collaborators c where c.business_id=bid and c.active and ((not has_team and c.is_solo) or (has_team and not c.is_solo and exists(select 1 from public.collaborator_services cs where cs.collaborator_id=c.id and cs.service_id=p_service))) order by c.name;
 end $$;

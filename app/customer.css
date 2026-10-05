@@ -143,3 +143,29 @@
 .consumer .u-gallery-viewer-footer small{display:block;color:#fff9;font-size:9px;margin-top:10px}
 @media(max-height:450px){.consumer .u-gallery-viewer-header{padding-top:calc(7px + env(safe-area-inset-top));padding-bottom:5px}.consumer .u-gallery-viewer-footer{padding-top:5px;padding-bottom:calc(7px + env(safe-area-inset-bottom))}.consumer .u-gallery-viewer-footer p{font-size:10px;-webkit-line-clamp:1;margin-bottom:5px}.consumer .u-gallery-viewer-footer small{display:none}.consumer .u-gallery-controls button{height:36px;min-width:36px}}
 .u-promo-booking select{width:100%;min-width:0;box-sizing:border-box;padding:14px;border:1px solid var(--u-line);border-radius:12px;background:var(--u-surface);color:inherit;font:inherit}.u-promo-booking label{display:grid;gap:8px;margin:18px 0}
+/* Me. verified visits and customer-authorized points */
+.u-walkin,.u-visit-checkout{display:grid;gap:16px;min-width:0;color:var(--u-ink)}
+.u-walkin h2,.u-visit-checkout h2{margin:0;font-size:23px}
+.u-walkin>span,.u-visit-checkout>span{color:var(--u-accent);font-size:12px;font-weight:700}
+.u-walkin p,.u-visit-checkout p{margin:0;font-size:13px}
+.u-walkin small,.u-visit-checkout small,.u-business-benefit small{font-size:11px;line-height:1.6;color:var(--u-muted)}
+.u-arrival-options{margin:0;border:1px solid var(--u-line);border-radius:14px;padding:16px;display:grid;gap:14px}
+.u-arrival-options legend{padding:0 6px;font-size:12px;font-weight:700}
+.u-arrival-options label{display:flex;align-items:center;gap:10px;font-size:13px;min-height:35px}
+.u-arrival-options input{width:18px;height:18px;accent-color:var(--u-accent);flex-shrink:0}
+.u-presence-code{background:var(--u-tint);border:1px solid var(--u-line);padding:22px 14px;border-radius:18px;display:grid;text-align:center;gap:10px}
+.u-presence-code span{font-size:12px;color:var(--u-accent)}
+.u-presence-code strong{font-family:monospace;font-size:clamp(18px,5.4vw,27px);letter-spacing:1.5px;color:var(--u-ink);white-space:nowrap}
+.u-checkout-verified,.u-checkout-success{color:var(--u-accent)}
+.u-payment-review{border:1px solid var(--u-line);border-radius:16px;padding:18px;display:grid;gap:16px;background:var(--u-surface)}
+.u-payment-review h3{margin:0;font-size:18px}
+.u-payment-review dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;font-size:12px;margin:0}
+.u-payment-review dd{margin:0;text-align:right;font-weight:700;overflow-wrap:anywhere}
+.u-payment-review dt{color:var(--u-muted)}
+.u-payment-review input{width:100%;box-sizing:border-box;min-height:48px;border:1px solid var(--u-line);border-radius:10px;padding:12px;background:var(--u-canvas)}
+.u-payment-review label{display:grid;gap:8px;font-size:12px}
+.u-payment-review .u-primary,.u-walkin .u-primary{white-space:normal;height:auto;min-height:48px;line-height:1.5;padding:12px 16px}
+.u-business-benefit{padding:20px;background:var(--u-tint);border-radius:16px;margin:20px 0;display:grid;gap:12px}
+.u-business-benefit p{font-size:12px;margin:0;color:var(--u-muted)}
+.u-business-benefit strong{font-size:15px;color:var(--u-accent)}
+.u-visit .u-text{font-size:12px;white-space:normal;text-align:left;min-height:44px;line-height:1.5}

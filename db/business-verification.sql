@@ -103,6 +103,8 @@ begin
  if r.starts_at=p_start and r.status in ('scheduled','confirmed') then return r; end if;
  if length(trim(p_name))<2 or length(p_name)>120 or length(p_phone)>40 then raise exception 'CONTACT_REQUIRED'; end if;
  if r.kind='new' then
+ if (r.draft?'requires_reservation' and jsonb_typeof(r.draft->'requires_reservation')<>'boolean') or (r.draft?'points_coverage_rate' and jsonb_typeof(r.draft->'points_coverage_rate')<>'number') then raise exception 'INVALID_BENEFIT';end if;
+ if r.draft?'points_coverage_rate' and (r.draft->>'points_coverage_rate')::numeric not in(.20,.30,.40,.50) then raise exception 'INVALID_BENEFIT';end if;
  if length(trim(coalesce(r.draft->>'name','')))<2 or length(trim(coalesce(r.draft->>'address','')))<5 or not private.valid_week(r.draft->'opening_schedule') or not exists(select 1 from jsonb_array_elements(r.draft->'opening_schedule') d where (d->>'enabled')::boolean) then raise exception 'BUSINESS_BASICS_REQUIRED';end if;
  if exists(select 1 from jsonb_array_elements(coalesce(r.draft->'team','[]')) t where length(trim(coalesce(t->>'name','')))<2 or coalesce(t->>'email','')!~'^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' or length(trim(coalesce(t->>'phone','')))<7) then raise exception 'WORKER_CONTACT_REQUIRED';end if;
  end if;
@@ -134,8 +136,8 @@ begin
  perform pg_advisory_xact_lock(hashtextextended('claim:'||bid::text,0));
  if exists(select 1 from public.business_members where business_id=bid and role='owner' and user_id<>r.user_id) then raise exception 'BUSINESS_OWNED'; end if;
  else
- insert into public.businesses(slug,name,description_es,description_en,short_description_es,short_description_en,address,city,area,phone,public_email,website_url,maps_url,directions_es,directions_en,opening_hours_es,opening_hours_en,theme,enrollment_status)
- values('espacio-'||replace(r.id::text,'-',''),d->>'name',coalesce(d->>'description_es',''),coalesce(d->>'description_en',''),coalesce(d->>'short_description_es',''),coalesce(d->>'short_description_en',''),d->>'address',d->>'city',d->>'area',d->>'phone',d->>'public_email',d->>'website_url',d->>'maps_url',coalesce(d->>'directions_es',''),coalesce(d->>'directions_en',''),coalesce(d->>'opening_hours_es',''),coalesce(d->>'opening_hours_en',''),jsonb_build_object('layout','navy','palette',case when d->>'palette' in ('pro','modern_teal','warm_neutral') then d->>'palette' else 'pro' end),'contacted') returning id into bid;
+ insert into public.businesses(slug,name,description_es,description_en,short_description_es,short_description_en,address,city,area,phone,public_email,website_url,maps_url,directions_es,directions_en,opening_hours_es,opening_hours_en,theme,enrollment_status,requires_reservation,points_coverage_rate)
+ values('espacio-'||replace(r.id::text,'-',''),d->>'name',coalesce(d->>'description_es',''),coalesce(d->>'description_en',''),coalesce(d->>'short_description_es',''),coalesce(d->>'short_description_en',''),d->>'address',d->>'city',d->>'area',d->>'phone',d->>'public_email',d->>'website_url',d->>'maps_url',coalesce(d->>'directions_es',''),coalesce(d->>'directions_en',''),coalesce(d->>'opening_hours_es',''),coalesce(d->>'opening_hours_en',''),jsonb_build_object('layout','navy','palette',case when d->>'palette' in ('pro','modern_teal','warm_neutral') then d->>'palette' else 'pro' end),'contacted',coalesce((d->>'requires_reservation')::boolean,true),coalesce((d->>'points_coverage_rate')::numeric,.50)) returning id into bid;
  for item in select value from jsonb_array_elements(coalesce(d->'gallery','[]')) loop
  if coalesce(item->>'image_url','') ~ '^https://' then
  insert into public.business_gallery(business_id,image_url,caption_es,caption_en,alt_es,alt_en,sort_order) values(bid,item->>'image_url',coalesce(item->>'caption_es',''),coalesce(item->>'caption_en',''),coalesce(item->>'alt_es',''),coalesce(item->>'alt_en',''),ord);ord:=ord+1;end if;

@@ -140,16 +140,18 @@ create function public.complete_promotion_visit(p_visit uuid,p_amount_mxn numeri
 revoke all on function private.complete_promotion_visit(uuid,numeric),public.complete_promotion_visit(uuid,numeric) from public,anon,authenticated;
 grant execute on function private.complete_promotion_visit(uuid,numeric),public.complete_promotion_visit(uuid,numeric) to authenticated;
 
-create view public.promotion_metrics with (security_invoker=true) as
+create or replace view public.promotion_metrics with (security_invoker=true) as
  select p.id promotion_id,p.business_id,
  (select count(*) from public.promotion_clicks c where c.promotion_id=p.id) clicks,
  (select count(distinct customer_id) from public.promotion_clicks c where c.promotion_id=p.id) unique_customers,
- (select count(*) from public.visits v where v.promotion_id=p.id) bookings,
+ (select count(*) from public.visits v where v.promotion_id=p.id and v.kind='appointment') bookings,
  (select count(*) from public.visits v where v.promotion_id=p.id and v.status='completed') completed,
  (select count(*) from public.visits v where v.promotion_id=p.id and v.status='cancelled') cancelled,
  (select coalesce(sum(amount_mxn),0) from public.visits v where v.promotion_id=p.id and v.status='completed') revenue_mxn
 ,
- (select count(*) from public.visits v join public.customer_relationships r on r.business_id=v.business_id and r.customer_id=v.customer_id and r.first_visit_id=v.id where v.promotion_id=p.id and v.status='completed') new_acquisitions
+ (select count(*) from public.visits v join public.customer_relationships r on r.business_id=v.business_id and r.customer_id=v.customer_id and r.first_visit_id=v.id where v.promotion_id=p.id and v.status='completed') new_acquisitions,
+ (select count(*) from public.visits v where v.promotion_id=p.id and v.kind='walk_in') walk_ins,
+ (select count(*) from public.visits v where v.promotion_id=p.id) attributed_visits
  from public.promotions p where private.is_manager(p.business_id);
 revoke all on public.promotion_metrics from anon,authenticated;
 grant select on public.promotion_metrics to authenticated;
